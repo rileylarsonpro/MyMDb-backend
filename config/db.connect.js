@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+// Only variables in schemas will be saved to the database
+mongoose.set('strictQuery', true); 
+
 // Create connection to MONGO using .env variable
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING,{
     useNewUrlParser: true,
