@@ -71,10 +71,9 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 //end swagger config
 
-app.use(authenticate) 
 
 //define routes 
-app.use('/api/v1/auth', require('./routes/auth'))
+app.use('/api/v1/user', require('./routes/user.routes.js'))
 
 //end define routes
 
