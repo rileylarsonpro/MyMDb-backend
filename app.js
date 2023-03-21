@@ -74,6 +74,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 //define routes 
 app.use('/api/v1/user', require('./routes/user.routes.js'))
+app.use('/api/v1/media', authenticate, require('./routes/media.routes.js'))
 
 //end define routes
 
