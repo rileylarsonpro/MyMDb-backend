@@ -1,6 +1,5 @@
-const { admin } = require("../config/firebase.config.js");
-
-exports.authenticate = async (req, res, next) => {
+import admin from "../config/firebase.config";
+export function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const idToken = authHeader.split(" ")[1];

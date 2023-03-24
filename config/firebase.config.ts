@@ -1,6 +1,17 @@
 const admin = require('firebase-admin')
 require('dotenv').config();
 
+// if no any env is not set throw error
+if (!process.env.FIREBASE_ADMIN_PRIVATE_KEY) {
+    throw new Error('FIREBASE_ADMIN_PRIVATE_KEY is not set');
+}
+if (!process.env.FIREBASE_ADMIN_CLIENT_EMAIL) {
+    throw new Error('FIREBASE_ADMIN_CLIENT_EMAIL is not set');
+}
+if (!process.env.FIREBASE_ADMIN_PROJECT_ID) {
+    throw new Error('FIREBASE_ADMIN_PROJECT_ID is not set');
+}
+
 // code from: https://www.tonyvu.co/posts/jwt-authentication-node-js
 admin.initializeApp({
     credential: admin.credential.cert({
@@ -13,4 +24,4 @@ admin.initializeApp({
       })
 });
 
-module.exports = { admin };
+export default admin;

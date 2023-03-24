@@ -1,4 +1,3 @@
-const User = require('../models/user.model');
 
 // See if email or username already exists
 exports.checkForAccount = async (req, res) => {

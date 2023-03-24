@@ -1,6 +1,6 @@
 const app = require('./app');
-require('./config/db.connect.js');
-require('./config/firebase.config.js');
+require('./config/db.connect');
+require('./config/firebase.config');
 
 //start server
 const port = process.env.PORT || 3000;
