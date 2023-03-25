@@ -13,7 +13,7 @@ const app = express();
 app.use(helmet());
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://10.0.0.147', 'http://10.0.0.1', 'http://10.0.0.5:3000'],
+    origin: '*',
     credentials: true,
 }))
 app.use(morgan(`dev`))
