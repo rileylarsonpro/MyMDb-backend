@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { authenticate } = require(`./middleware/authenticated`)
+const { hasUser } = require(`./middleware/hasUser`)
 const helmet = require('helmet');
 const morgan = require('morgan');
 const swaggerUI = require('swagger-ui-express');
@@ -74,7 +74,8 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 //define routes 
 app.use('/api/v1/user', require('./routes/user.routes.js'))
-app.use('/api/v1/media', authenticate, require('./routes/media.routes.js'))
+app.use('/api/v1/media', hasUser, require('./routes/media.routes.js'))
+app.use('/api/v1/log', hasUser, require('./routes/log.routes.js'))
 
 //end define routes
 
