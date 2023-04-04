@@ -1,4 +1,4 @@
-const axios = require('axios')
+const tmdb = require('../utils/tmdb')
 
 
 exports.searchMulti = async (req, res) => {
@@ -7,7 +7,7 @@ exports.searchMulti = async (req, res) => {
         if (!query) return res.status(400).send({
             message: "Missing query"
         })
-        const { data } = await axios.get(`${process.env.TMDB_API_HOST}/search/multi?api_key=${process.env.TMDB_API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`)
+        const { data } = await tmdb.searchMulti(query)
         return res.status(200).send(data.results)
     } catch (error) {
         console.log(error)
@@ -26,7 +26,7 @@ exports.getDetails = async (req, res) => {
         let append = ""
         if (mediaType === "movie") append = "&append_to_response=release_dates";
         if (mediaType === "tv") append = "&append_to_response=content_ratings";
-        let { data } = await axios.get(`${process.env.TMDB_API_HOST}/${mediaType}/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US${append}`)
+        let { data } = await tmdb.getDetails(mediaType, id, append)
         // format content ratings for us only 
         if (mediaType === "tv") {
             data.content_ratings.results = data.content_ratings.results.filter(rating => rating.iso_3166_1 === "US")
@@ -43,7 +43,7 @@ exports.getDetails = async (req, res) => {
                     for (let j = i + 1; (j < i + 20 && j < data.seasons.length); j++) {
                         append += ",season/" + data.seasons[j].season_number
                     }
-                    axiosCalls.push(axios.get(`${process.env.TMDB_API_HOST}/${mediaType}/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US${append}`))
+                    axiosCalls.push(tmdb.getDetails(mediaType, id, append));
                 }
                 const requestGroup = await axios.all(axiosCalls)
                 requestGroup.forEach(response => {
@@ -55,7 +55,7 @@ exports.getDetails = async (req, res) => {
                 for (let i = 1; i < data.seasons.length; i++) {
                     append += ",season/" + data.seasons[i].season_number
                 }
-                const { data: seasonData } = await axios.get(`${process.env.TMDB_API_HOST}/${mediaType}/${id}?api_key=${process.env.TMDB_API_KEY}&language=en-US${append}`)
+                const { data: seasonData } = await tmdb.getDetails(mediaType, id, append)
                 data = { ...data, ...seasonData }
             }
 
