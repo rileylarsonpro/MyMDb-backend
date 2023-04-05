@@ -76,6 +76,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 app.use('/api/v1/user', require('./routes/user.routes.js'))
 app.use('/api/v1/media', hasUser, require('./routes/media.routes.js'))
 app.use('/api/v1/log', hasUser, require('./routes/log.routes.js'))
+app.use('/api/v1/tag', hasUser, require('./routes/tag.routes.js'))
 
 //end define routes
 
