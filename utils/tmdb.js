@@ -10,5 +10,9 @@ exports.getDetails = (mediaType, id, append = "") => {
 }
 
 exports.getTvEpisodeDetails = (tvId, seasonNumber, episodeNumber, append = "") => {
-    return axios.get(`${process.env.TMDB_API_HOST}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}?api_key=${process.env.TMDB_API_KEY}&language=en-US`)
+    return axios.get(`${process.env.TMDB_API_HOST}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}?api_key=${process.env.TMDB_API_KEY}&language=en-US${append}`)
+}
+
+exports.getTvSeasonDetails = (tvId, seasonNumber, append = "") => {
+    return axios.get(`${process.env.TMDB_API_HOST}/tv/${tvId}/season/${seasonNumber}?api_key=${process.env.TMDB_API_KEY}&language=en-US${append}`)
 }
