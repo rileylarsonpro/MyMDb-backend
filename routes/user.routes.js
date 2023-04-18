@@ -1,6 +1,7 @@
 const express = require(`express`);
 const router = express.Router();
 const { authenticate } = require(`../middleware/authenticated`)
+const { hasUser } = require(`../middleware/hasUser`)
 const userController = require(`../controllers/user.controller`)
 
 
@@ -13,6 +14,8 @@ router.get(`/`, authenticate, (req, res) => {
 router.get(`/check-for-account`, userController.checkForAccount)
 
 router.post(`/create-account`, authenticate, userController.createAccount)
+
+router.get(`/profile`, hasUser, userController.getProfile)
 
 
 module.exports = router

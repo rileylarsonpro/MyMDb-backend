@@ -54,3 +54,14 @@ exports.createAccount = async (req, res) => {
     }
 };
 
+exports.getProfile = async (req, res) => {
+    try {
+        let user = await User.findById(req.user._id);
+        return res.status(200).send(user);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send({
+            message: "Error getting user"
+        });
+    }
+}

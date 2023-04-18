@@ -17,7 +17,6 @@ app.use(cors({
     credentials: true,
 }))
 app.use(morgan(`dev`))
-app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
  
 
@@ -73,6 +72,8 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 
 //define routes 
+app.use('/api/v1/user/file', require('./routes/fileUpload.routes.js'))
+app.use(express.json())
 app.use('/api/v1/user', require('./routes/user.routes.js'))
 app.use('/api/v1/media', hasUser, require('./routes/media.routes.js'))
 app.use('/api/v1/log', hasUser, require('./routes/log.routes.js'))
