@@ -5,6 +5,7 @@ const userSchema = new Schema({
     username: String,
     email: String,
     firebaseId: String,
+    displayName: String,
     profilePicture: {
         type: String,
         default: ''

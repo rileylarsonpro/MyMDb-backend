@@ -40,7 +40,9 @@ exports.createAccount = async (req, res) => {
         const user = new User({
             username: req.body.username,
             email: req.body.email,
-            firebaseId: req.user.uid
+            firebaseId: req.user.uid,
+            profilePicture: '',
+            displayName: req.body.username
         });
 
         // Save User in the database

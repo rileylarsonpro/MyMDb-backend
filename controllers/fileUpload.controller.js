@@ -11,7 +11,7 @@ exports.uploadFile = async (req, res) => {
             });
         }
 
-        return res.send({
+        return res.status(201).send({
             message: "File has been uploaded.",
         });
     } catch (error) {
@@ -50,3 +50,31 @@ exports.downloadFile = async (req, res) => {
         });
     }
 };
+
+exports.deleteFile = async (req, res) => {
+    try {
+        const gridFSBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+            bucketName: 'photos'
+        });
+        let documents = await gridFSBucket.find({ filename: req.params.name }).toArray()
+        if (documents.length == 0) {
+            return res.status(404).send({
+                message: "File not found",
+            });
+        }
+        await Promise.all(
+            documents.map((doc) => {
+             return gridFSBucket.delete(doc._id);
+            }), 
+           );
+        await User.findByIdAndUpdate(req.user._id, { profilePicture: '' })
+        return res.status(204).send({
+            message: "File has been deleted",
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            message: error.message,
+        });
+    }
+}

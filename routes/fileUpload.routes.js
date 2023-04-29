@@ -8,4 +8,6 @@ router.post(`/profile-picture`, hasUser, uploadFilesMiddleware, fileUploadContro
 
 router.get(`/:name`, fileUploadController.downloadFile);
 
+router.delete(`/:name`, hasUser, fileUploadController.deleteFile);
+
 module.exports = router;
