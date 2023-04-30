@@ -17,5 +17,7 @@ router.post(`/create-account`, authenticate, userController.createAccount)
 
 router.get(`/profile`, hasUser, userController.getProfile)
 
+router.put(`/profile`, hasUser, userController.updateProfile)
+
 
 module.exports = router

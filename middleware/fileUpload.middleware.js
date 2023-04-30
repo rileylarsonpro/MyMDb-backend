@@ -24,3 +24,13 @@ const storage = new GridFsStorage({
 let uploadFiles = multer({ storage: storage }).single("file");
 exports.uploadFilesMiddleware = util.promisify(uploadFiles);
 
+
+exports.onlyAllowImageFiles = (req, res, next) => {
+    if (req.file && req.file.mimetype.startsWith(`image`)) {
+        next();
+    }
+    else {
+        res.status(400).send({message: `Only image files are allowed`});
+    }
+}
+

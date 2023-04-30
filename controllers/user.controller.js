@@ -67,3 +67,25 @@ exports.getProfile = async (req, res) => {
         });
     }
 }
+
+exports.updateProfile = async (req, res) => {
+    try {
+        let user = await User.findById(req.user._id);
+        if (req.body.displayName === '') {
+            return res.status(400).send({
+                message: "Display name can not be empty"
+            });
+        }
+        if (req.body.displayName) {
+            user.displayName = req.body.displayName
+        }
+        await user.save();
+        return res.status(200).send(user);
+    }
+    catch (error) {
+        console.log(error)
+        return res.status(500).send({
+            message: "Error updating user"
+        });
+    }
+}
