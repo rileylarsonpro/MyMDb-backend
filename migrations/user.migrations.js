@@ -4,12 +4,14 @@ const User = require('../models/user.model');
 
 
 (async () => {
-    await User.updateMany({profilePicture: {$exists: false} }, { $set: { profilePicture: '' } });
+    // await User.updateMany({profilePicture: {$exists: false} }, { $set: { profilePicture: '' } });
 
-    let users = await User.find();
-    for(let user of users) {
-        await User.findByIdAndUpdate(user._id, { displayName: user.username });
-    }
+    // let users = await User.find();
+    // for(let user of users) {
+    //     await User.findByIdAndUpdate(user._id, { displayName: user.username });
+    // }
+
+    await User.updateMany({backgroundImage: {$exists: false} }, { $set: { backgroundImage: '' } });
 
     db.close(() => console.log("Database closed"));
 })();

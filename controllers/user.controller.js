@@ -79,6 +79,20 @@ exports.updateProfile = async (req, res) => {
         if (req.body.displayName) {
             user.displayName = req.body.displayName
         }
+        if (req.body.bio) {
+            user.bio = req.body.bio
+        }
+        if (req.body.backgroundImage == '') {
+            user.backgroundImage = ''
+        }
+        if (req.body.backgroundImage) {
+            if (!req.body.backgroundImage.startsWith('https://image.tmdb.org/t/p/')) {
+                return res.status(400).send({
+                    message: "Background image must be a valid TMDB image URL"
+                });
+            }
+            user.backgroundImage = req.body.backgroundImage
+        }
         await user.save();
         return res.status(200).send(user);
     }

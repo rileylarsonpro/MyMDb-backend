@@ -3,6 +3,7 @@ const router = express.Router();
 const { authenticate } = require(`../middleware/authenticated`)
 const { hasUser } = require(`../middleware/hasUser`)
 const userController = require(`../controllers/user.controller`)
+const { sanitizeBioHTML } = require(`../middleware/user.middleware`)
 
 
 
@@ -17,7 +18,7 @@ router.post(`/create-account`, authenticate, userController.createAccount)
 
 router.get(`/profile`, hasUser, userController.getProfile)
 
-router.put(`/profile`, hasUser, userController.updateProfile)
+router.put(`/profile`, hasUser, sanitizeBioHTML, userController.updateProfile)
 
 
 module.exports = router

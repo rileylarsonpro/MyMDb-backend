@@ -10,6 +10,14 @@ const userSchema = new Schema({
         type: String,
         default: ''
     },
+    bio: {
+        type: String,
+        default: ''
+    },
+    backgroundImage: {
+        type: String,
+        default: ''
+    },
 }, { timestamps: true,  collection: 'Users' });
 
 const User = mongoose.model('user', userSchema);

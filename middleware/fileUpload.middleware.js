@@ -1,36 +1,30 @@
 const util = require("util");
 const multer = require("multer");
 const { GridFsStorage } = require("multer-gridfs-storage");
-require('dotenv').config();
+require("dotenv").config();
 
 const storage = new GridFsStorage({
   url: process.env.MONGODB_CONNECTION_STRING,
   options: { useNewUrlParser: true, useUnifiedTopology: true },
-  file: (req, file) => {
-    const match = ["image/png", "image/jpeg"];
-
-    if (match.indexOf(file.mimetype) === -1) {
-      const filename = `${req.user._id}-profile-picture`;
-      return filename;
-    }
+  file: (req, res, file) => {
 
     return {
       bucketName: "photos",
-      filename: `${req.user._id}-profile-picture`
+      filename: `${req.user._id}-profile-picture`,
     };
-  }
+  },
 });
 
-let uploadFiles = multer({ storage: storage }).single("file");
+let uploadFiles = multer({
+  storage: storage,
+  fileFilter: (request, file, callback) => {
+    const acceptedTypes = file.mimetype.split("/");
+    if (acceptedTypes[0] === "image") {
+      callback(null, true);
+    } else {
+      callback(null, false);
+      callback(new Error("Only images and videos formats allowed!"));
+    }
+  },
+}).single("file");
 exports.uploadFilesMiddleware = util.promisify(uploadFiles);
-
-
-exports.onlyAllowImageFiles = (req, res, next) => {
-    if (req.file && req.file.mimetype.startsWith(`image`)) {
-        next();
-    }
-    else {
-        res.status(400).send({message: `Only image files are allowed`});
-    }
-}
-
