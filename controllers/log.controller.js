@@ -7,8 +7,8 @@ exports.logEpisode = async (req, res) => {
     try {
         //run these in parallel
         let [{data: episode}, {data: show}] = await Promise.all([
-            tmdb.getTvEpisodeDetails(req.body.tvShowId, req.body.tvSeason, req.body.tvEpisode),
-            tmdb.getDetails("tv", req.body.tvShowId)
+            tmdb.getTvEpisodeDetails(req.body.tmdbShowId, req.body.season, req.body.episode),
+            tmdb.getDetails("tv", req.body.tmdbShowId)
         ]);
         let log = req.body;
         const episodeLog = new Log( {
@@ -25,12 +25,12 @@ exports.logEpisode = async (req, res) => {
             containsSpoilers: log.containsSpoilers,
             tags: log.tags,
             userId: req.user._id,
-            tvEpisode: {
+            episode: {
                 name: episode.name,
                 season: episode.season_number,
                 episode: episode.episode_number,
                 showName: show.name,
-                tmdbShowId: req.body.tvShowId,
+                tmdbShowId: req.body.tmdbShowId,
                 tmdbEpisodeId: episode.id,
                 poster: episode.still_path,
                 airDate: episode.air_date,
@@ -47,8 +47,8 @@ exports.logEpisode = async (req, res) => {
 exports.logSeason = async (req, res) => {
     try {
         let [{data: season}, {data: show}] = await Promise.all([
-            tmdb.getTvSeasonDetails(req.body.tvShowId, req.body.tvSeason),
-            tmdb.getDetails("tv", req.body.tvShowId)
+            tmdb.getTvSeasonDetails(req.body.tmdbShowId, req.body.season),
+            tmdb.getDetails("tv", req.body.tmdbShowId)
         ]);
         let log = req.body;
         const seasonLog = new Log( {
@@ -65,11 +65,11 @@ exports.logSeason = async (req, res) => {
             containsSpoilers: log.containsSpoilers,
             tags: log.tags,
             userId: req.user._id,
-            tvSeason: {
-                name: req.body.tvSeason > 0 ? `Season ${req.body.tvSeason}` : `Specials`,
-                season: req.body.tvSeason,
+            season: {
+                name: req.body.season > 0 ? `Season ${req.body.season}` : `Specials`,
+                season: req.body.season,
                 showName: show.name,
-                tmdbShowId: req.body.tvShowId,
+                tmdbShowId: req.body.tmdbShowId,
                 poster: season.poster_path,
                 airDate: season.air_date,
             }
@@ -84,7 +84,7 @@ exports.logSeason = async (req, res) => {
 
 exports.logShow = async (req, res) => {
     try {
-        let {data: show} = await tmdb.getDetails("tv", req.body.tvShowId);
+        let {data: show} = await tmdb.getDetails("tv", req.body.tmdbShowId);
         let log = req.body;
         const showLog = new Log( {
             logType: LogTypes.TV_SHOW,
@@ -102,7 +102,7 @@ exports.logShow = async (req, res) => {
             userId: req.user._id,
             tvShow: {
                 name: show.name,
-                tmdbShowId: req.body.tvShowId,
+                tmdbShowId: req.body.tmdbShowId,
                 poster: show.poster_path,
                 startDate: show.first_air_date,
                 endDate: show.last_air_date,
@@ -121,7 +121,7 @@ exports.logShow = async (req, res) => {
 
 exports.logMovie = async (req, res) => {
     try {
-        let {data: movie} = await tmdb.getDetails("movie", req.body.movieId);
+        let {data: movie} = await tmdb.getDetails("movie", req.body.tmdbMovieId);
         let log = req.body;
         const movieLog = new Log( {
             logType: LogTypes.MOVIE,
@@ -139,7 +139,7 @@ exports.logMovie = async (req, res) => {
             userId: req.user._id,
             movie: {
                 name: movie.title,
-                tmdbMovieId: req.body.movieId,
+                tmdbMovieId: req.body.tmdbMovieId,
                 poster: movie.poster_path,
                 releaseDate: movie.release_date,
                 runtime: movie.runtime,

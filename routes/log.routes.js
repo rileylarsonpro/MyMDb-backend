@@ -5,8 +5,8 @@ const { validateLogTvEpisode,
         validateLogTvSeason, 
         validateLogTvShow, 
         validateLogMovie, 
-        handleTags, 
         sanitizeLogHTML } = require(`../middleware/log.middleware`)
+const {handleTags} = require(`../middleware/tag.middleware`)
 
 
 

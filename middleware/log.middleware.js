@@ -1,6 +1,5 @@
 const { checkSchema, validationResult } = require('express-validator');
-const Tag = require('../models/tag.model');
-const sanitizeHtml = require('sanitize-html');
+const { sanitizeHTML } = require('../utils/functions');
 
 //standardizing validations to run in parallel
 const validate = (validations) => {
@@ -104,36 +103,36 @@ const logValidationSchema = {
     },
 };
 
-tvEpisodeLogValidationSchema = {
+episodeLogValidationSchema = {
     ...logValidationSchema,
-    tvShowId: {
+    tmdbShowId: {
         isInt: true
     },
-    tvSeason: {
+    season: {
         isInt: true
     },
-    tvEpisode: {
+    episode: {
         isInt: true
     }
 };
 
-exports.validateLogTvEpisode = validate(checkSchema(tvEpisodeLogValidationSchema));
+exports.validateLogTvEpisode = validate(checkSchema(episodeLogValidationSchema));
 
-tvSeasonLogValidationSchema = {
+seasonLogValidationSchema = {
     ...logValidationSchema,
-    tvShowId: {
+    tmdbShowId: {
         isInt: true
     },
-    tvSeason: {
+    season: {
         isInt: true
     }
 };
 
-exports.validateLogTvSeason = validate(checkSchema(tvSeasonLogValidationSchema));
+exports.validateLogTvSeason = validate(checkSchema(seasonLogValidationSchema));
 
 tvShowLogValidationSchema = {
     ...logValidationSchema,
-    tvShowId: {
+    tmdbShowId: {
         isInt: true
     }
 };
@@ -142,7 +141,7 @@ exports.validateLogTvShow = validate(checkSchema(tvShowLogValidationSchema));
 
 movieLogValidationSchema = {
     ...logValidationSchema,
-    movieId: {
+    tmdbMovieId: {
         isInt: true
     }
 };
@@ -150,46 +149,13 @@ movieLogValidationSchema = {
 exports.validateLogMovie = validate(checkSchema(movieLogValidationSchema));
 
 
-async function getTagId(tag, userId) {
-    let formattedTag = tag.toLowerCase().trim();
-    let existingTag = await Tag.findOne({name: formattedTag});
-    if (existingTag) {
-        return existingTag._id;
-    }
-    else {
-        let newTag = new Tag({name: formattedTag, userId: userId});
-        await newTag.save();
-        return newTag._id;
-    }
-}
 
-exports.handleTags = async (req, res, next) => {
-    let tagPromises = [];
-    for (let tag of req.body.tags) {
-        tagPromises.push(getTagId(tag, req.user._id));
-    }
-    req.body.tags = await Promise.all(tagPromises);
-    next();
-}
 
-const sanitizeHtmlOptions = {
-    allowedTags: [ 'p', 'br', 'strong', 'em', 'strong', 'u', 'ol', 'ul', 'li', 'a' ],
-    allowedAttributes: {
-      'a': [ 'href', 'rel' ]
-    },
-};
 
 
 exports.sanitizeLogHTML = (req, res, next) => {
-    // if reviewText or noteText are exclusively a combination of <p> or </p> or <br> tags set them to empty strings regex
-    if (req.body.reviewText && req.body.reviewText.match(/^(<p>|<\/p>|<br>|\s)*$/)) {
-        req.body.reviewText = '';
-    }
-    if (req.body.noteText && req.body.noteText.match(/^(<p>|<\/p>|<br>|\s)*$/)) {
-        req.body.noteText = '';
-    }
-    req.body.reviewText = sanitizeHtml(req.body.reviewText, sanitizeHtmlOptions);
-    req.body.noteText = sanitizeHtml(req.body.noteText, sanitizeHtmlOptions);
+    req.body.reviewText = sanitizeHTML(req.body.reviewText);
+    req.body.noteText = sanitizeHTML(req.body.noteText);
     next();
 }
 

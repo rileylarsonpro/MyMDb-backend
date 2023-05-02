@@ -78,6 +78,7 @@ app.use('/api/v1/user', require('./routes/user.routes.js'))
 app.use('/api/v1/media', hasUser, require('./routes/media.routes.js'))
 app.use('/api/v1/log', hasUser, require('./routes/log.routes.js'))
 app.use('/api/v1/tag', hasUser, require('./routes/tag.routes.js'))
+app.use('/api/v1/list', hasUser, require('./routes/list.routes.js'))
 
 //end define routes
 
