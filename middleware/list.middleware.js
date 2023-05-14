@@ -110,7 +110,7 @@ const createListValidationSchema = {
                                 }
                                 break;
                             case ListItemTypes.PERSON:
-                                if (!item.personId) {
+                                if (!item.tmdbPersonId) {
                                     throw new Error('Person id must be provided');
                                 }
                                 break;

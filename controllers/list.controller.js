@@ -2,15 +2,16 @@ const List = require('../models/list.model');
 const ListItem = require('../models/listItem.model');
 const {ListTypes, ListItemTypes, CategoryLabels} = require('../utils/types');
 const tmdb = require('../utils/tmdb');
+const mongoose = require('mongoose');
 
 async function createNewListItem(listId, listItem, rank, userId) {
     const newListItem = new ListItem({
         listId: listId,
         userId: userId,
-        type: listItem.itemType,
-        rank: rank
+        type: listItem.type,
+        rank: rank,
     });
-    switch (listItem.itemType) {
+    switch (listItem.type) {
         case ListItemTypes.MOVIE:
             let {data: movie} = await tmdb.getDetails('movie', listItem.tmdbMovieId);
             newListItem.movie = {
@@ -67,7 +68,7 @@ async function createNewListItem(listId, listItem, rank, userId) {
             }
             break;
         case ListItemTypes.PERSON:
-            let {data: person} = await tmdb.getDetails('person', listItem.personId);
+            let {data: person} = await tmdb.getDetails('person', listItem.tmdbPersonId);
             newListItem.person = {
                 name: person.name,
                 poster: person.profile_path,
@@ -147,7 +148,7 @@ exports.updateCustomList = async (req, res) => {
     }
 }
 
-exports.getCustomList = async (req, res) => {
+exports.getList = async (req, res) => {
     try {
         let listId = req.params.listId;
         let list = await List.findById(listId);
@@ -205,19 +206,18 @@ exports.deleteCustomList = async (req, res) => {
     }
 }
 
-exports.getCustomLists = async (req, res) => {
+exports.getUserLists = async (req, res) => {
     try {
         let userId = req.user._id;
         let lists = await List.aggregate([
             {
                 $match: {
-                    userId: mongoose.Types.ObjectId(userId),
-                    listType: ListTypes.CUSTOM
+                    userId: mongoose.Types.ObjectId(userId)
                 }
             },
             {
                 $lookup: {
-                    from: "listitems",
+                    from: "ListItems",
                     localField: "_id",
                     foreignField: "listId",
                     as: "allListItems"
@@ -236,7 +236,7 @@ exports.getCustomLists = async (req, res) => {
                     },
                     listItems: {
                         // limit to first 5
-                        $slice: ["$allListItems", 5]
+                        $slice: ["$allListItems", 4]
                     },
                 }
             },

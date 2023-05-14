@@ -13,11 +13,11 @@ router.post(`/custom`, sanitizeDescriptionHTML, validateCreateList, handleTags, 
 
 router.put(`/custom/:listId`, sanitizeDescriptionHTML, validateUpdateList, handleTags, listController.updateCustomList);
 
-router.get(`/custom/:listId`, listController.getCustomList);
-
 router.delete(`/custom/:listId`, listController.deleteCustomList);
 
-router.get(`/custom`, listController.getCustomLists);
+router.get(`/user-lists`, listController.getUserLists);
+
+router.get(`/:listId`, listController.getList);
 
 
 
