@@ -178,7 +178,7 @@ exports.getList = async (req, res) => {
     }
 }
 
-exports.deleteCustomList = async (req, res) => {
+exports.deleteList = async (req, res) => {
     try {
         let listId = req.params.listId;
         let list = await List.findById(listId);
