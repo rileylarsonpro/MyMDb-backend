@@ -151,7 +151,10 @@ exports.updateCustomList = async (req, res) => {
 exports.getList = async (req, res) => {
     try {
         let listId = req.params.listId;
-        let list = await List.findById(listId);
+        let list = await List.findById(listId).populate( {
+            path: 'userId',
+            select: 'displayName profilePicture'
+        });
         if (!list) {
             res.status(404).send({
                 message: "List not found"
@@ -238,6 +241,7 @@ exports.getUserLists = async (req, res) => {
                         // limit to first 5
                         $slice: ["$allListItems", 4]
                     },
+                    updatedAt: 1
                 }
             },
             {
