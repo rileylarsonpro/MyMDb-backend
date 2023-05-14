@@ -33,7 +33,7 @@ const listItemSchema = new Schema({
             status: String,
         }
     },
-    season: {
+    tvSeason: {
         type: {
             name: String,
             showName: String,
@@ -43,7 +43,7 @@ const listItemSchema = new Schema({
             airDate: Date,
         }
     },
-    episode: {
+    tvEpisode: {
         type: {
             name: String,
             showName: String,

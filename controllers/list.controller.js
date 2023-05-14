@@ -13,7 +13,7 @@ async function createNewListItem(listId, listItem, rank, userId) {
     });
     switch (listItem.type) {
         case ListItemTypes.MOVIE:
-            let {data: movie} = await tmdb.getDetails('movie', listItem.tmdbMovieId);
+            let {data: movie} = await tmdb.getDetails('movie', listItem.movie.tmdbMovieId);
             newListItem.movie = {
                 name: movie.title,
                 releaseDate: movie.release_date,
@@ -22,7 +22,7 @@ async function createNewListItem(listId, listItem, rank, userId) {
             }
             break;
         case ListItemTypes.TV_SHOW:
-            let {data: show} = await tmdb.getDetails('tv', listItem.tmdbShowId);
+            let {data: show} = await tmdb.getDetails('tv', listItem.tvShow.tmdbShowId);
             newListItem.tvShow = {
                 name: show.name,
                 startDate: show.first_air_date,
@@ -34,29 +34,29 @@ async function createNewListItem(listId, listItem, rank, userId) {
             break;
         case ListItemTypes.TV_SEASON:
             let [{data: season}, {data: show1}] = await Promise.all([
-                tmdb.getTvSeasonDetails(listItem.tmdbShowId, listItem.season),
-                tmdb.getDetails("tv", listItem.tmdbShowId)
+                tmdb.getTvSeasonDetails(listItem.tvSeason.tmdbShowId, listItem.tvSeason),
+                tmdb.getDetails("tv", listItem.tvSeason.tmdbShowId)
             ]);
-            newListItem.season = {
-                name: listItem.season > 0 ? `Season ${listItem.season}` : "Specials",
-                season: listItem.season,
+            newListItem.tvSeason = {
+                name: listItem.tvSeason.season > 0 ? `Season ${listItem.tvSeason.season}` : "Specials",
+                season: listItem.tvSeason.season,
                 showName: show1.name,
-                tmdbShowId: listItem.tmdbShowId,
+                tmdbShowId: listItem.tvSeason.tmdbShowId,
                 poster: season.poster_path,
                 airDate: season.air_date,
             }
             break;
         case ListItemTypes.TV_EPISODE:
             let [{data: episode}, {data: show2}] = await Promise.all([
-                tmdb.getTvEpisodeDetails(listItem.tmdbShowId, listItem.season, listItem.episode),
-                tmdb.getDetails("tv", listItem.tmdbShowId)
+                tmdb.getTvEpisodeDetails(listItem.tvEpisode.tmdbShowId, listItem.tvEpisode.season, listItem.tvEpisode.episode),
+                tmdb.getDetails("tv", listItem.tvEpisode.tmdbShowId)
             ]);
-            newListItem.episode = {
+            newListItem.tvEpisode = {
                 name: episode.name,
-                season: listItem.season,
-                episode: listItem.episode,
+                season: listItem.tvEpisode.season,
+                episode: listItem.tvEpisode.episode,
                 showName: show2.name,
-                tmdbShowId: listItem.tmdbShowId,
+                tmdbShowId: listItem.tvEpisode.tmdbShowId,
                 tmdbEpisodeId: episode.id,
                 poster: episode.still_path,
                 airDate: episode.air_date,
@@ -64,11 +64,11 @@ async function createNewListItem(listId, listItem, rank, userId) {
             break;
         case ListItemTypes.CATEGORY:
             newListItem.category = {
-                listId: listItem.listId,
+                listId: listItem.category.listId,
             }
             break;
         case ListItemTypes.PERSON:
-            let {data: person} = await tmdb.getDetails('person', listItem.tmdbPersonId);
+            let {data: person} = await tmdb.getDetails('person', listItem.person.tmdbPersonId);
             newListItem.person = {
                 name: person.name,
                 poster: person.profile_path,
@@ -161,7 +161,7 @@ exports.getList = async (req, res) => {
             })
             return;
         }
-        if (list.isPrivate && list.userId.toString() !== req.user._id.toString()) {
+        if (list.isPrivate && list.userId._id.toString() !== req.user._id.toString()) {
             res.status(403).send({
                 message: "Cannot access private list that is not yours"
             })
