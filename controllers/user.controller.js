@@ -78,7 +78,9 @@ exports.getProfile = async (req, res) => {
             bio: user.bio,
             profilePicture: user.profilePicture,
             backgroundImage: user.backgroundImage,
-            favoriteLists: favoriteLists
+            favoriteLists: favoriteLists,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
         });
     } catch (error) {
         console.log(error)
