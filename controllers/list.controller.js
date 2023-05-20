@@ -1,5 +1,6 @@
 const List = require('../models/list.model');
 const ListItem = require('../models/listItem.model');
+const User = require('../models/user.model');
 const {ListTypes, ListItemTypes, CategoryLabels} = require('../utils/types');
 const tmdb = require('../utils/tmdb');
 const mongoose = require('mongoose');
@@ -121,6 +122,10 @@ exports.updateCustomList = async (req, res) => {
             res.sendStatus(403);
             return;
         }
+        if (listToUpdate.listType !== ListTypes.CUSTOM || listToUpdate.listType !== ListTypes.OSCARS || listToUpdate.listType !== ListTypes.FTBBW) {
+            res.status(400).send({message: "Cannot update this list type."});
+            return;
+        }
         listToUpdate.name = list.name;
         listToUpdate.description = list.description;
         listToUpdate.ranked = list.ranked;
@@ -148,29 +153,40 @@ exports.updateCustomList = async (req, res) => {
     }
 }
 
-exports.getList = async (req, res) => {
+exports.getListHelperFunction = async (listId, userId) => {
     try {
-        let listId = req.params.listId;
         let list = await List.findById(listId).populate( {
             path: 'userId',
             select: 'displayName profilePicture'
         });
         if (!list) {
-            res.status(404).send({
-                message: "List not found"
-            })
-            return;
+            return { success: false, message: "List not found"};
         }
-        if (list.isPrivate && list.userId._id.toString() !== req.user._id.toString()) {
-            res.status(403).send({
-                message: "Cannot access private list that is not yours"
-            })
-            return;
+        if (list.isPrivate && list.userId._id.toString() !== userId.toString()) {
+            return { success: false, message: "Cannot access private list that is not yours"};
         }
         let listItems = await ListItem.find({listId: listId, deleted: false}).sort({rank: 1});
+        return { success: true, list: list, listItems: listItems};
+    } catch (error) {
+        console.log(error);
+        return { success: false, message: "Internal server error"};
+    }
+}
+
+exports.getList = async (req, res) => {
+    try {
+        let listId = req.params.listId;
+        let userId = req.user ? req.user._id : null;
+        let result = await this.getListHelperFunction(listId, userId);
+        if (!result.success) {
+            res.status(404).send({
+                message: result.message
+            })
+            return;
+        }
         res.status(200).send({
-            list: list,
-            listItems: listItems
+            list: result.list,
+            listItems: result.listItems
         });
     } catch (error) {
         console.log(error);
@@ -215,7 +231,10 @@ exports.getUserLists = async (req, res) => {
         let lists = await List.aggregate([
             {
                 $match: {
-                    userId: mongoose.Types.ObjectId(userId)
+                    userId: mongoose.Types.ObjectId(userId),
+                    listType: {
+                        $in: [ListTypes.CUSTOM, ListTypes.OSCARS, ListTypes.FTBBW]
+                    }
                 }
             },
             {
@@ -223,7 +242,14 @@ exports.getUserLists = async (req, res) => {
                     from: "ListItems",
                     localField: "_id",
                     foreignField: "listId",
-                    as: "allListItems"
+                    as: "allListItems",
+                    pipeline: [
+                        {
+                            $sort: {
+                                rank: 1
+                            }
+                        }
+                    ]
                 }
             },
             {
@@ -257,4 +283,42 @@ exports.getUserLists = async (req, res) => {
         res.sendStatus(500);
     }
 }
+
+exports.updateFavoriteList = async (req, res) => {
+    let listType = req.params.listType;
+    let listItems = req.body;
+    let userId = req.user._id;
+    let list = await List.findOne({userId: userId, listType: listType});
+    // if list doesn't exist, create it
+    if (!list && listItems.length > 0) {
+        let formattedName = listType.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        let newList = new List({
+            name: formattedName,
+            listType: listType,
+            description: "",
+            ranked: false,
+            tags: [],
+            userId: userId,
+            isPrivate: false,
+            maxSize: 4,
+        });
+        list = await newList.save();
+        await User.updateOne({_id: userId}, {$push: {favoriteLists: list._id}});
+    }
+    // delete all list items
+    await ListItem.deleteMany({listId: list._id});
+    // create new list items
+    await Promise.all(listItems.map(async (listItem, index) => {
+        return await createNewListItem(list._id, listItem, index + 1, userId);
+    }));
+    // if list is empty, delete it
+    if (listItems.length === 0) {
+        await User.updateOne({_id: userId}, {$pull: {favoriteLists: list._id}});
+        await List.deleteOne({_id: list._id});
+    }
+    return res.sendStatus(200);
+};
+
+    
+
 

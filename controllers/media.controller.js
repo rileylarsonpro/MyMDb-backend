@@ -4,11 +4,21 @@ const tmdb = require('../utils/tmdb')
 exports.searchMulti = async (req, res) => {
     try {
         const { query } = req.query
+        const { itemType } = req.params
         if (!query) return res.status(400).send({
             message: "Missing query"
         })
-        const { data } = await tmdb.searchMulti(query)
-        return res.status(200).send(data.results)
+        if (!itemType) return res.status(400).send({
+            message: "Missing itemType"
+        })
+        if (itemType === "movie" || itemType === "tv" || itemType === "person" || itemType === "multi") {
+            const { data } = await tmdb.searchMulti(itemType, query)
+            return res.status(200).send(data.results)
+        }
+        return res.status(400).send({
+            message: "Invalid itemType"
+        })
+
     } catch (error) {
         console.log(error)
         return res.status(500).send({

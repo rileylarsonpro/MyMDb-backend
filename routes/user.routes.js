@@ -8,7 +8,7 @@ const { sanitizeBioHTML } = require(`../middleware/user.middleware`)
 
 
 // check if user is logged in
-router.get(`/`, authenticate, (req, res) => {
+router.get(`/`, hasUser, (req, res) => {
     res.send(req.user)
 })
 

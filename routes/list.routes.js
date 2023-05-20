@@ -19,6 +19,8 @@ router.get(`/user-lists`, listController.getUserLists);
 
 router.get(`/:listId`, listController.getList);
 
+router.put(`/favorite/:listType`, listController.updateFavoriteList);
+
 
 
 

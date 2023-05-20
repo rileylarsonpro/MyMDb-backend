@@ -1,8 +1,8 @@
 require('dotenv').config();
 const axios = require('axios');
 
-exports.searchMulti = (query) => {
-    return axios.get(`${process.env.TMDB_API_HOST}/search/multi?api_key=${process.env.TMDB_API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`)
+exports.searchMulti = (itemType, query) => {
+    return axios.get(`${process.env.TMDB_API_HOST}/search/${itemType}?api_key=${process.env.TMDB_API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`)
 }
 
 exports.getDetails = (mediaType, id, append = "") => {

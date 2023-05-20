@@ -1,4 +1,5 @@
 const User = require('../models/user.model');
+const {getListHelperFunction} = require('./list.controller');
 
 // See if email or username already exists
 exports.checkForAccount = async (req, res) => {
@@ -59,7 +60,26 @@ exports.createAccount = async (req, res) => {
 exports.getProfile = async (req, res) => {
     try {
         let user = await User.findById(req.user._id);
-        return res.status(200).send(user);
+        let favoriteLists = await Promise.all(user.favoriteLists.map(async (listId) => {
+            let listRes = await getListHelperFunction(listId, req.user._id);
+            console.log(listRes)
+            if (listRes.success) {
+                return {
+                    list: listRes.list,
+                    listItems: listRes.listItems
+                }
+            }
+            return null;
+        }));
+        return res.status(200).send({
+            _id: user._id,
+            displayName: user.displayName,
+            username: user.username,
+            bio: user.bio,
+            profilePicture: user.profilePicture,
+            backgroundImage: user.backgroundImage,
+            favoriteLists: favoriteLists
+        });
     } catch (error) {
         console.log(error)
         return res.status(500).send({

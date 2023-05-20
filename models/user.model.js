@@ -18,6 +18,9 @@ const userSchema = new Schema({
         type: String,
         default: ''
     },
+    favoriteLists: [{
+        type: Schema.Types.ObjectId,
+    }]
 }, { timestamps: true,  collection: 'Users' });
 
 const User = mongoose.model('user', userSchema);

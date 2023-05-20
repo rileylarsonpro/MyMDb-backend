@@ -8,7 +8,11 @@ exports.LogTypes = {
 exports.ListTypes = {
     WATCHLIST: 'WATCHLIST',
     CUSTOM: 'CUSTOM',
-    OSCARS: 'OSCARS'
+    OSCARS: 'OSCARS',
+    FTBBW: 'FTBBW',
+    FAVORITE_MOVIES: 'FAVORITE_MOVIES',
+    FAVORITE_TV_SHOWS: 'FAVORITE_TV_SHOWS',
+    FAVORITE_PEOPLE: 'FAVORITE_PEOPLE'
 }
 
 exports.ListItemTypes = {

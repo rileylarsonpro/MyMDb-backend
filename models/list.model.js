@@ -8,7 +8,7 @@ const listSchema = new Schema({
     },
     listType: {
         type: String,
-        enum: ['FAVORITES', 'WATCHLIST', 'CUSTOM', 'OSCARS'],
+        enum: ['FAVORITE_MOVIES', 'FAVORITE_TV_SHOWS', 'FAVORITE_PEOPLE', 'WATCHLIST', 'CUSTOM', 'OSCARS'],
         required: true
     },
     description: {
